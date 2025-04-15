@@ -1,5 +1,7 @@
-using Fusion;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using Fusion;
 
 public class FireBall : NetworkBehaviour
 {
@@ -27,7 +29,7 @@ public class FireBall : NetworkBehaviour
             if (targetPlayer != null)
             {
                 targetPlayer.TakeDamage(Damage);
-                Debug.Log("Nhan dame");
+                Debug.Log($"đã tấn công gây sát thương");
                 Owner.IncreaseScore(score);
             }
 
@@ -48,5 +50,6 @@ public class FireBall : NetworkBehaviour
             Runner.Despawn(Object);
         }
         transform.position += shootDirection * Speed * Time.fixedDeltaTime;
+        Debug.Log($"đã tấn công");
     }
 }

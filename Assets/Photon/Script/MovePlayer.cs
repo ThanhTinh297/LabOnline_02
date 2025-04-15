@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,6 +10,9 @@ public class MovePlayer : NetworkBehaviour
     [SerializeField] private Vector3 velocity = Vector3.zero;
     [SerializeField] private CharacterController characterController;
     [SerializeField] private Animator animator;
+
+    [SerializeField] private AudioSource footstepSound; // Âm thanh bước chân
+    private bool isFootstepPlaying = false; // Để kiểm tra âm thanh đang phát
 
     [Networked, OnChangedRender(nameof(OnSpeedChanged))]
     private float AnimationSpeed { get; set; }
@@ -59,58 +62,71 @@ public class MovePlayer : NetworkBehaviour
     }
 
     public override void FixedUpdateNetwork()
+{
+    if (chatUI != null && chatUI.IsChatInputActive)
     {
-        if (chatUI != null && chatUI.IsChatInputActive)
+        if (IsMoving || AnimationSpeed > 0.1f)
         {
-            if (IsMoving || AnimationSpeed > 0.1f)
-            {
-                IsMoving = false;
-                AnimationSpeed = 0f;
-            }
-
-            velocity.y -= gravity * Runner.DeltaTime;
-            characterController.Move(velocity * Runner.DeltaTime);
-            return;
+            IsMoving = false;
+            AnimationSpeed = 0f;
         }
 
-        if (!HasInputAuthority) return;
-        if (characterController == null) return;
+        velocity.y -= gravity * Runner.DeltaTime;
+        characterController.Move(velocity * Runner.DeltaTime);
+        return;
+    }
 
-        var horizontal = Input.GetAxis("Horizontal");
-        var vertical = Input.GetAxis("Vertical");
-        var jump = Input.GetAxis("Jump");
+    if (!HasInputAuthority) return;
+    if (characterController == null) return;
 
-        Vector3 movementInput = new Vector3(horizontal, 0, vertical);
-        Vector3 moveDirection = movementInput.normalized;
+    var horizontal = Input.GetAxis("Horizontal");
+    var vertical = Input.GetAxis("Vertical");
+    var jump = Input.GetAxis("Jump");
 
-        if (characterController.isGrounded)
+    Vector3 movementInput = new Vector3(horizontal, 0, vertical);
+    Vector3 moveDirection = movementInput.normalized;
+
+    if (characterController.isGrounded)
+    {
+        velocity.y = -0.1f;
+        if (jump != 0)
         {
-            velocity.y = -0.1f;
-            if (jump != 0)
-            {
-                velocity.y = jumpForce;
-                IsJumping = true;
-            }
-        }
-        else
-        {
-            velocity.y -= gravity * Runner.DeltaTime;
-            IsJumping = false;
-        }
-
-        Vector3 finalMovement = moveDirection * speed + velocity;
-
-        characterController.Move(finalMovement * Runner.DeltaTime);
-
-        Vector3 horizontalVelocity = new Vector3(characterController.velocity.x, 0, characterController.velocity.z);
-        AnimationSpeed = horizontalVelocity.magnitude;
-        IsMoving = movementInput.sqrMagnitude > 0.01f;
-
-        if (movementInput != Vector3.zero)
-        {
-            RotatePlayer(moveDirection);
+            velocity.y = jumpForce;
+            IsJumping = true;
+            Debug.Log($"{gameObject.name} đã nhảy với lực {jumpForce}!");
         }
     }
+    else
+    {
+        velocity.y -= gravity * Runner.DeltaTime;
+        IsJumping = false;
+    }
+
+    Vector3 finalMovement = moveDirection * speed + velocity;
+
+    // Phát âm thanh bước chân khi di chuyển
+    if (IsMoving && characterController.isGrounded && !isFootstepPlaying)
+    {
+        isFootstepPlaying = true;
+        footstepSound.Play();
+    }
+    else if (!IsMoving || !characterController.isGrounded)
+    {
+        isFootstepPlaying = false;
+    }
+
+    characterController.Move(finalMovement * Runner.DeltaTime);
+
+    Vector3 horizontalVelocity = new Vector3(characterController.velocity.x, 0, characterController.velocity.z);
+    AnimationSpeed = horizontalVelocity.magnitude;
+    IsMoving = movementInput.sqrMagnitude > 0.01f;
+
+    if (movementInput != Vector3.zero)
+    {
+        RotatePlayer(moveDirection);
+    }
+}
+
 
     private void RotatePlayer(Vector3 direction)
     {

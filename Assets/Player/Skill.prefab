@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 704834473757035483}
   - component: {fileID: 6049073189408112521}
   - component: {fileID: 8798620810935731593}
-  - component: {fileID: -5100303144225465411}
+  - component: {fileID: 3998191226494093690}
   m_Layer: 0
-  m_Name: FireBall
+  m_Name: Skill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.93, y: 0.99, z: 0.18506888}
-  m_LocalScale: {x: 0.66059, y: 0.66059, z: 0.66059}
+  m_LocalScale: {x: 0.11, y: 0.67, z: 0.96}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: f323cced30244554986ee5e9f5dd8b67, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SortKey: 3121999013
+  SortKey: 3080066660
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
@@ -158,9 +158,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4f31580110989d4593f5e1587182b19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damage: 30
-  Speed: 20
---- !u!82 &-5100303144225465411
+  Damage: 50
+  Speed: 10
+--- !u!82 &3998191226494093690
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -170,7 +170,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: d0461b22b0e3f0d4abc51763428ef71a, type: 3}
+  m_audioClip: {fileID: 8300000, guid: f40982eb8c4b8f64082b98275b51956a, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
