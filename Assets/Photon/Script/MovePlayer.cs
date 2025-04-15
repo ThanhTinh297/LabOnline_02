@@ -11,6 +11,9 @@ public class MovePlayer : NetworkBehaviour
     [SerializeField] private CharacterController characterController;
     [SerializeField] private Animator animator;
 
+    [SerializeField] private AudioSource footstepSound; // Âm thanh bước chân
+    private bool isFootstepPlaying = false; // Để kiểm tra âm thanh đang phát
+
     [Networked, OnChangedRender(nameof(OnSpeedChanged))]
     private float AnimationSpeed { get; set; }
 
@@ -70,7 +73,6 @@ public class MovePlayer : NetworkBehaviour
                 IsJumping = true;
                 Debug.Log($"{gameObject.name} đã nhảy với lực {jumpForce}!");
             }
-            //CheckGround();
         }
         else
         {
@@ -80,6 +82,17 @@ public class MovePlayer : NetworkBehaviour
         characterController.Move((movement * speed + velocity) * Runner.DeltaTime);
         AnimationSpeed = characterController.velocity.magnitude;
         IsMoving = vertical != 0 || horizontal != 0;
+
+        // Phát âm thanh bước chân khi di chuyển
+        if (IsMoving && characterController.isGrounded && !isFootstepPlaying)
+        {
+            isFootstepPlaying = true;
+            footstepSound.Play();
+        }
+        else if (!IsMoving || !characterController.isGrounded)
+        {
+            isFootstepPlaying = false;
+        }
 
         if (movement != Vector3.zero)
         {
