@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -68,6 +68,7 @@ public class MovePlayer : NetworkBehaviour
             {
                 velocity.y = jumpForce;
                 IsJumping = true;
+                Debug.Log($"{gameObject.name} đã nhảy với lực {jumpForce}!");
             }
             //CheckGround();
         }
