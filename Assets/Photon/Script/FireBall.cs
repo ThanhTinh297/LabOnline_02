@@ -5,14 +5,17 @@ using Fusion;
 
 public class FireBall : NetworkBehaviour
 {
+    [Networked] public PlayerProperties Owner { get; set; }
+
     private Vector3 shootDirection;
     [SerializeField] private int Damage = 30;
     [SerializeField] private int Speed = 20;
+    [SerializeField] private int score = 10;
     [Networked] private TickTimer _tickTimer { get; set; }
 
     public void Setup(Vector3 direction)
     {
-        _tickTimer = TickTimer.CreateFromSeconds(Runner , 1.5f);
+        _tickTimer = TickTimer.CreateFromSeconds(Runner, 1.5f);
         shootDirection = direction;
     }
     private void OnTriggerEnter(Collider other)
@@ -22,11 +25,14 @@ public class FireBall : NetworkBehaviour
             //var targetPlayer = other.gameObject.GetComponent<NetworkObject>().InputAuthority;
             //RpcFireBall(targetPlayer, 10);
             var targetPlayer = other.gameObject.GetComponent<PlayerProperties>();
+            //var _player = gameObject.GetComponent<PlayerProperties>();
             if (targetPlayer != null)
             {
-                    targetPlayer.TakeDamage(Damage);
+                targetPlayer.TakeDamage(Damage);
                 Debug.Log($"đã tấn công gây sát thương");
+                Owner.IncreaseScore(score);
             }
+
         }
     }
 

@@ -29,6 +29,8 @@ public class MovePlayer : NetworkBehaviour
     [Networked, OnChangedRender(nameof(OnPlayerAttack))]
     public int IsAttacking { get; set; } = 0;
 
+    private ChatUI chatUI;
+
     void OnSpeedChanged()
     {
         animator.SetFloat("Speed", AnimationSpeed);
@@ -54,67 +56,85 @@ public class MovePlayer : NetworkBehaviour
         animator.SetInteger("IsAttacking", IsAttacking);
     }
 
+    void Awake()
+    {
+        chatUI = FindObjectOfType<ChatUI>();
+    }
+
     public override void FixedUpdateNetwork()
+{
+    if (chatUI != null && chatUI.IsChatInputActive)
     {
-        var horizontal = Input.GetAxis("Horizontal");
-        var vertical = Input.GetAxis("Vertical");
-        var jump = Input.GetAxis("Jump");
-
-        Vector3 movement = new Vector3(horizontal, 0, vertical);
-
-        if (characterController.isGrounded)
+        if (IsMoving || AnimationSpeed > 0.1f)
         {
-            if (IsJumping) IsJumping = false;
-            velocity.y = 0f;
-
-            if (jump > 0)
-            {
-                velocity.y = jumpForce;
-                IsJumping = true;
-                Debug.Log($"{gameObject.name} đã nhảy với lực {jumpForce}!");
-            }
-        }
-        else
-        {
-            velocity.y -= gravity * Runner.DeltaTime;
+            IsMoving = false;
+            AnimationSpeed = 0f;
         }
 
-        characterController.Move((movement * speed + velocity) * Runner.DeltaTime);
-        AnimationSpeed = characterController.velocity.magnitude;
-        IsMoving = vertical != 0 || horizontal != 0;
-
-        // Phát âm thanh bước chân khi di chuyển
-        if (IsMoving && characterController.isGrounded && !isFootstepPlaying)
-        {
-            isFootstepPlaying = true;
-            footstepSound.Play();
-        }
-        else if (!IsMoving || !characterController.isGrounded)
-        {
-            isFootstepPlaying = false;
-        }
-
-        if (movement != Vector3.zero)
-        {
-            RotatorPlayer(movement);
-        }
+        velocity.y -= gravity * Runner.DeltaTime;
+        characterController.Move(velocity * Runner.DeltaTime);
+        return;
     }
 
-    private void CheckGround()
+    if (!HasInputAuthority) return;
+    if (characterController == null) return;
+
+    var horizontal = Input.GetAxis("Horizontal");
+    var vertical = Input.GetAxis("Vertical");
+    var jump = Input.GetAxis("Jump");
+
+    Vector3 movementInput = new Vector3(horizontal, 0, vertical);
+    Vector3 moveDirection = movementInput.normalized;
+
+    if (characterController.isGrounded)
     {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, 1.2f))
+        velocity.y = -0.1f;
+        if (jump != 0)
         {
-            if (hit.collider.CompareTag("Plane"))
-            {
-                Debug.Log("kill");
-            }
+            velocity.y = jumpForce;
+            IsJumping = true;
+            Debug.Log($"{gameObject.name} đã nhảy với lực {jumpForce}!");
         }
     }
-
-    private void RotatorPlayer(Vector3 direction)
+    else
     {
+        velocity.y -= gravity * Runner.DeltaTime;
+        IsJumping = false;
+    }
+
+    Vector3 finalMovement = moveDirection * speed + velocity;
+
+    // Phát âm thanh bước chân khi di chuyển
+    if (IsMoving && characterController.isGrounded && !isFootstepPlaying)
+    {
+        isFootstepPlaying = true;
+        footstepSound.Play();
+    }
+    else if (!IsMoving || !characterController.isGrounded)
+    {
+        isFootstepPlaying = false;
+    }
+
+    characterController.Move(finalMovement * Runner.DeltaTime);
+
+    Vector3 horizontalVelocity = new Vector3(characterController.velocity.x, 0, characterController.velocity.z);
+    AnimationSpeed = horizontalVelocity.magnitude;
+    IsMoving = movementInput.sqrMagnitude > 0.01f;
+
+    if (movementInput != Vector3.zero)
+    {
+        RotatePlayer(moveDirection);
+    }
+}
+
+
+    private void RotatePlayer(Vector3 direction)
+    {
+        if (direction == Vector3.zero) return;
+
         Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, speed * Runner.DeltaTime * 100);
+        float rotationSpeed = 720f;
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation,
+            rotationSpeed * Runner.DeltaTime);
     }
 }
