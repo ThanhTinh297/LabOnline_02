@@ -3014,6 +3014,7 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   characterController: {fileID: 866643829536441852}
   animator: {fileID: 8338354228008854510}
+  _IsAttacking: 0
 --- !u!114 &-2620423490282082463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3042,6 +3043,7 @@ MonoBehaviour:
   healthSlider: {fileID: 1060174998514908657}
   manaSlider: {fileID: 4327682669981197385}
   fireBallPrefab: {fileID: 8956205570076377396, guid: ba13a8a27a6c23540975eae62b426cbb, type: 3}
+  Skill: {fileID: 8956205570076377396, guid: 70b7aa96e6cd5844ba71b95f87e8e471, type: 3}
   fireBallSpawnPoint: {fileID: 6944543636470091622}
 --- !u!1 &8025450885929761562
 GameObject:

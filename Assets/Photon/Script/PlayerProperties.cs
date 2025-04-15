@@ -11,6 +11,7 @@ public class PlayerProperties : NetworkBehaviour
     [SerializeField] Image manaSlider;
 
     [SerializeField] GameObject fireBallPrefab;
+    [SerializeField] GameObject Skill;
     [SerializeField] Transform fireBallSpawnPoint;
     private void OnHealthChanged()
     {
@@ -55,6 +56,23 @@ public class PlayerProperties : NetworkBehaviour
                 {
                     health = currentHealth,
                     mana = currentMana - 10
+                };
+            }
+            if (Input.GetKeyDown(KeyCode.R) && _playerInfo.mana > 0)
+            {
+                Runner.Spawn(Skill, fireBallSpawnPoint.position,
+                    fireBallSpawnPoint.rotation, Runner.LocalPlayer, (runner, obj) =>
+                    {
+                        var fireBall = obj.GetComponent<FireBall>();
+                        fireBall.Setup(fireBallSpawnPoint.forward.normalized);
+                    });
+
+                var currentHealth = _playerInfo.health;
+                var currentMana = _playerInfo.mana;
+                _playerInfo = new PlayerInfo
+                {
+                    health = currentHealth,
+                    mana = currentMana - 30
                 };
             }
         }
