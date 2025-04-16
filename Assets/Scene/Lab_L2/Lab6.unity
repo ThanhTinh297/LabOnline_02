@@ -195,10 +195,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b599a70ae6c3dd348a9420cdeea79c4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 8826747806454660677, guid: 2368b3ca121b04442bc98d212a941078, type: 3}
-  SpawnPoint:
+  playerPrefab: {fileID: 8826747806454660677, guid: 2368b3ca121b04442bc98d212a941078, type: 3}
+  spawnPoints:
   - {fileID: 645497956}
   - {fileID: 1292291829}
+  chatManager: {fileID: 0}
 --- !u!114 &140476771
 MonoBehaviour:
   m_ObjectHideFlags: 0
